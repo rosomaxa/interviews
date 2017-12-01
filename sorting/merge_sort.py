@@ -26,7 +26,7 @@ def merge(S, S1, S2):
             j += 1
 
 
-class SelectionSortTest(unittest.TestCase):
+class MergeSortTest(unittest.TestCase):
     def test_already_sorted_array_remains_sorted(self):
         inp_array = [1, 2, 3, 4, 5, 6]
         expected_array = [1, 2, 3, 4, 5, 6]
