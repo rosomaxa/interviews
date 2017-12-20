@@ -14,10 +14,12 @@ def quick_sort(S):
                 left += 1
             while left <= right and pivot < S[right]:
                 right -= 1
+
             if left <= right:
                 S[left], S[right] = S[right], S[left]
                 left += 1
                 right -= 1
+
         S[left], S[b] = S[b], S[left]
         _in_place_quick_sort(S, a, left - 1)
         _in_place_quick_sort(S, left + 1, b)
