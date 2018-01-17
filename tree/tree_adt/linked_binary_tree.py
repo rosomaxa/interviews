@@ -1,31 +1,94 @@
-import abc
-
 from interviews.tree.tree_adt import tree_base
 
 
-class BinaryTree(tree_base.Tree):
-    @abc.abstractmethod
+class LinkedBinaryTree(tree_base.BinaryTree):
+    class _Node(object):
+        def __init__(self, element, parent=None, left=None, right=None):
+            self._element = element
+            self._parent = parent
+            self._left = left
+            self._right = right
+
+    class Position(tree_base.BinaryTree.Position):
+        def __init__(self, container, node):
+            self._container = container
+            self._node = node
+
+        def element(self):
+            return self._node._element
+
+        def __eq__(self, other):
+            return type(other) is type(self) and other._node is self._node
+
+    def _validate(self, p):
+        if not isinstance(p, self.Position):
+            raise TypeError('p must be proper Position type.')
+
+        if p._container is not self:
+            raise ValueError('p does not belong to this container.')
+
+        return p._node
+
+    def _make_position(self, p):
+        if p is not None:
+            return self.Position(self, p)
+
+    def __init__(self):
+        self._root = None
+        self._size = 0
+
+    def __len__(self):
+        return self._size
+
+    def root(self):
+        return self._make_position(self._root)
+
+    def parent(self, p):
+        node = self._validate(p)
+        return self._make_position(node._parent)
+
     def left(self, p):
-        pass
+        node = self._validate(p)
+        return self._make_position(node._left)
 
-    @abc.abstractmethod
     def right(self, p):
-        pass
+        node = self._validate(p)
+        return self._make_position(node._right)
 
-    def subling(self, p):
-        """Return a Position representing p's sibling (None if no sibling)."""
-        parent = self.parent(p)
-        if parent is None:
-            return
+    def num_children(self, p):
+        node = self._validate(p)
+        count = 0
+        if node._left:
+            count += 1
+        if node._right:
+            count += 1
+        return count
 
-        if p == self.left(parent):
-            return self.right(parent)
+    def _add_root(self, e):
+        if self.root():
+            raise ValueError('root already exists.')
+        self._size = 1
+        self._root = self._Node(e)
+        return self._make_position(self._root)
 
-        return self.left(parent)
+    def _add_left(self, p, e):
+        node = self._validate(p)
+        if node._left:
+            raise ValueError('left child already exists')
+        self._size += 1
+        node._left = self._Node(e, node)
+        return self._make_position(node._left)
 
-    def children(self, p):
-        """Generate an iteration of Positions representing p's children."""
-        if self.left(p) is not None:
-            yield self.left(p)
-        if self.right(p) is not None:
-            yield self.right(p)
+    def _add_right(self, p, e):
+        node = self._validate(p)
+        if node._right:
+            raise ValueError('right child already exists')
+        self._size += 1
+        node._right = self._Node(e, node)
+        return self._make_position(node._right)
+
+    def _replace(self, p, e):
+        node = self._validate(p)
+        old = node._element
+        node._element = e
+        return old
