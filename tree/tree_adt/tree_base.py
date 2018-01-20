@@ -1,5 +1,7 @@
 import abc
 
+from interviews.linked_list import singly_linked_list
+
 
 class Tree(object):
     class Position(object):
@@ -15,6 +17,10 @@ class Tree(object):
 
         def __ne__(self, other):
             return not self == other
+
+    def __iter__(self):
+        for p in self.positions():
+            yield p.element()
 
     @abc.abstractmethod
     def root(self):
@@ -75,6 +81,44 @@ class Tree(object):
 
         return _height(p)
 
+    def positions(self):
+        return self.preorder()
+
+    def preorder(self):
+        if not self.is_empty():
+            for p in self._subtree_preorder(self.root()):
+                yield p
+
+    def _subtree_preorder(self, p):
+        yield p
+        for c in self.children(p):
+            for other in self._subtree_preorder(c):
+                yield other
+
+    def postorder(self):
+        """Generate a postorder iteration of positions in the tree."""
+        if not self.is_empty():
+            for p in self._subtree_postorder(self.root()):
+                yield p
+
+    def _subtree_postorder(self, p):
+        """Generate a postorder iteration of positions in subtree rooted at p"""
+        for c in self.children(p):
+            for other in self._subtree_postorder(c):
+                yield other
+        yield p
+
+    def breadthfirst(self):
+        """Generate a breadth-first iteration of the positions of the tree."""
+        if not self.is_empty():
+            queue = singly_linked_list.LinkedQueue()
+            queue.enqueue(self.root())
+            while queue:
+                p = queue.dequeue()
+                yield p
+                for c in self.children(p):
+                    queue.enqueue(c)
+
 
 class BinaryTree(Tree):
     @abc.abstractmethod
@@ -102,3 +146,23 @@ class BinaryTree(Tree):
             yield self.left(p)
         if self.right(p) is not None:
             yield self.right(p)
+
+    def inorder(self):
+        """Generate an inorder iteration of positions in the tree."""
+        if not self.is_empty():
+            for p in self._subtree_inorder(self.root()):
+                yield p
+
+    def _subtree_inorder(self, p):
+        """Generate an inorder iteration of positions in subtree rooted at p."""
+        if p._left:
+            for other in self._subtree_inorder(self.left(p)):
+                yield other
+        yield p
+        if p._right:
+            for other in self._subtree_inorder(self.right(p)):
+                yield other
+
+    def positions(self):
+        """Generate an iteration of the tree s positions."""
+        return self.inorder()

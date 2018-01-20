@@ -92,3 +92,25 @@ class LinkedBinaryTree(tree_base.BinaryTree):
         old = node._element
         node._element = e
         return old
+
+    def _delete(self, p):
+        node = self._validate(p)
+        if self.num_children(p) == 2:
+            raise ValueError('Node has both children.')
+        if node._left:
+            child = node._left
+        else:
+            child = node._right
+        if child:
+            child._parent = node._parent
+        if node is self._root:
+            self._root = child
+        else:
+            parent = node._parent
+            if node is parent._left:
+                parent._left = child
+            else:
+                parent._right = child
+        self._size -= 1
+
+        return node._element
