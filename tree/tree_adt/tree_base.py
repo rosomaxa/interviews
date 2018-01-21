@@ -119,6 +119,15 @@ class Tree(object):
                 for c in self.children(p):
                     queue.enqueue(c)
 
+    def preorder_label(self, p, d, path):
+        label = '.'.join(str(i + 1) for i in path)
+        print 2 * d * ' ' + label,  p.element()
+        path.append(0)
+        for ch in self.children():
+            self.preorder_label(ch. d + 1, path)
+            path[-1] += 1
+        path.pop()
+
 
 class BinaryTree(Tree):
     @abc.abstractmethod
